@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Calculator</title>
+  <style>
+    :root {
+      --bg: #1e1e2f;
+      --button-bg: #2d2d44;
+      --button-text: #ffffff;
+      --accent: #00e676;
+      --error: #f44336;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--button-text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .calculator {
+      background-color: #2b2b3c;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      width: 320px;
+    }
+
+    .display {
+      width: 100%;
+      height: 60px;
+      font-size: 28px;
+      text-align: right;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      background-color: #1c1c2e;
+      color: white;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .buttons button {
+      padding: 18px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .buttons button:hover {
+      background-color: #3a3a5e;
+    }
+
+    .buttons .operator {
+      background-color: #ff9800;
+    }
+
+    .buttons .equal {
+      background-color: var(--accent);
+      color: #000;
+      grid-column: span 2;
+    }
+
+    .buttons .clear {
+      background-color: var(--error);
+    }
+
+    .history-panel {
+      width: 200px;
+      background-color: #2b2b3c;
+      border-radius: 15px;
+      padding: 15px;
+      max-height: 420px;
+      overflow-y: auto;
+      font-size: 16px;
+    }
+
+    .history-panel h3 {
+      margin-top: 0;
+      text-align: center;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+
+    .history-entry {
+      border-bottom: 1px solid #444;
+      padding: 5px 0;
+    }
+
+    .history-entry:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <input type="text" class="display" id="display" disabled />
+      <div class="buttons">
+        <button onclick="clearDisplay()" class="clear">C</button>
+        <button onclick="deleteLast()">⌫</button>
+        <button onclick="appendOperator('%')" class="operator">%</button>
+        <button onclick="appendOperator('/')" class="operator">÷</button>
+
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="appendOperator('*')" class="operator">×</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="appendOperator('-')" class="operator">−</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="appendOperator('+')" class="operator">+</button>
+
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="appendNumber('.')">.</button>
+        <button onclick="calculate()" class="equal">=</button>
+      </div>
+    </div>
+
+    <div class="history-panel" id="historyPanel">
+      <h3>History</h3>
+      <!-- History entries appear here -->
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const historyPanel = document.getElementById('historyPanel');
+
+    function appendNumber(num) {
+      display.value += num;
+    }
+
+    function appendOperator(operator) {
+      if (display.value === '') return;
+      const lastChar = display.value[display.value.length - 1];
+      if (['+', '-', '*', '/', '%'].includes(lastChar)) return;
+      display.value += operator;
+    }
+
+    function clearDisplay() {
+      display.value = '';
+    }
+
+    function deleteLast() {
+      display.value = display.value.slice(0, -1);
+    }
+
+    function calculate() {
+      try {
+        const expression = display.value;
+        const result = eval(expression);
+        display.value = result;
+
+        // Add to history
+        const entry = document.createElement('div');
+        entry.className = 'history-entry';
+        entry.textContent = `${expression} = ${result}`;
+        historyPanel.appendChild(entry);
+
+        // Auto-scroll to latest
+        historyPanel.scrollTop = historyPanel.scrollHeight;
+
+      } catch (e) {
+        display.value = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
